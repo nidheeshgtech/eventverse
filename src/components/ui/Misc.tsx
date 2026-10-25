@@ -1,6 +1,6 @@
 import { useMemo, type HTMLAttributes, type ReactNode } from 'react';
 import { itemSvg, svgDataUri } from '@/assets/art';
-import type { ItemKind } from '@/types/event';
+import type { ItemKind, VisualStyle } from '@/types/event';
 
 export function GlassCard({ className = '', children, ...rest }: HTMLAttributes<HTMLDivElement>) {
   return (
@@ -38,8 +38,17 @@ export function SampleBadge({ label = 'Sample / Demo only' }: { label?: string }
   );
 }
 
-export function GiftArt({ kind, size = 64, className = '', alt }: { kind: ItemKind; size?: number; className?: string; alt?: string }) {
-  const src = useMemo(() => svgDataUri(itemSvg(kind, `i${kind}`)), [kind]);
+interface GiftArtProps {
+  kind: ItemKind;
+  /** Art set to draw from; defaults to the festive gift boxes. */
+  style?: VisualStyle;
+  size?: number;
+  className?: string;
+  alt?: string;
+}
+
+export function GiftArt({ kind, style = 'festive', size = 64, className = '', alt }: GiftArtProps) {
+  const src = useMemo(() => svgDataUri(itemSvg(kind, `i${kind}`, style)), [kind, style]);
   return (
     <img
       src={src}

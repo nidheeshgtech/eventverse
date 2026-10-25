@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { BookDemo, FinalCta } from '@/components/landing/BookDemo';
 import { Hero } from '@/components/landing/Hero';
-import { Benefits, HowItWorks, UseCases } from '@/components/landing/Sections';
+import { DemoShowcase } from '@/components/landing/DemoShowcase';
+import { Benefits, HowItWorks } from '@/components/landing/Sections';
 import { Footer } from '@/components/layout/Footer';
 import { SiteNav } from '@/components/layout/SiteNav';
 import { useReveal } from '@/hooks/useReveal';
@@ -23,9 +24,9 @@ export function LandingPage() {
       <main id="main" ref={main}>
         <Hero />
         <div className="hairline section" />
+        <DemoShowcase />
         <HowItWorks />
         <Benefits />
-        <UseCases />
         <BookDemo />
         <FinalCta />
       </main>

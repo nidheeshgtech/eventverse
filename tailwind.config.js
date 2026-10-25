@@ -14,7 +14,8 @@ export default {
         },
       },
       fontFamily: {
-        display: ['Outfit', 'system-ui', 'sans-serif'],
+        // Overridable per event (e.g. the luxury style swaps in Playfair Display).
+        display: ['var(--font-display)', 'system-ui', 'sans-serif'],
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       boxShadow: {

@@ -1,5 +1,6 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useParams } from 'react-router-dom';
+import { EventBackdrop } from '@/components/game/EventBackdrop';
 import { formatDate } from '@/components/game/VoucherCard';
 import { BrandMark, Logo } from '@/components/ui/Brand';
 import { Button, ButtonLink } from '@/components/ui/Button';
@@ -7,10 +8,9 @@ import { Icon } from '@/components/ui/Icon';
 import { Badge, GlassCard, PageLoader, SampleBadge } from '@/components/ui/Misc';
 import { useToast } from '@/components/ui/Toast';
 import { useAsync } from '@/hooks/useAsync';
-import { themeVars } from '@/services/color';
 import { data } from '@/services/data';
 import { isValidVoucherCode } from '@/services/ids';
-import type { Voucher } from '@/types/event';
+import type { EventConfig, Voucher } from '@/types/event';
 
 /** Landing page for a scanned voucher QR. Staff can verify and mark it redeemed. */
 export default function VoucherPage() {
@@ -58,10 +58,8 @@ export default function VoucherPage() {
     }
   };
 
-  const style = (event ? themeVars(event.theme.primary, event.theme.accent) : {}) as CSSProperties;
-
   return (
-    <div style={style} className="min-h-[100dvh] px-4 py-8 safe-top">
+    <Shell event={event ?? null}>
       <div className="mx-auto max-w-md">
         <div className="flex items-center justify-between">
           <Logo />
@@ -137,6 +135,18 @@ export default function VoucherPage() {
           </ButtonLink>
         </div>
       </div>
-    </div>
+    </Shell>
+  );
+}
+
+/** Event-branded backdrop when the voucher's event is known; plain page otherwise. */
+function Shell({ event, children }: { event: EventConfig | null; children: ReactNode }) {
+  const inner = <div className="relative min-h-[100dvh] px-4 py-8 safe-top">{children}</div>;
+  return event ? (
+    <EventBackdrop event={event} particles={false}>
+      {inner}
+    </EventBackdrop>
+  ) : (
+    inner
   );
 }

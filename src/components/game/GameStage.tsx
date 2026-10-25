@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { useDocumentHidden } from '@/hooks/useDocumentHidden';
+import { presetOf, styleOf } from '@/config/styles';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { sound } from '@/services/sound';
 import type { EventConfig } from '@/types/event';
@@ -47,6 +48,8 @@ export function GameStage({ event, onEnd, onQuit }: Props) {
             scores: event.game.scores,
             basketColor: event.theme.primary,
             reducedMotion: reduced,
+            style: styleOf(event.theme),
+            particle: presetOf(event.theme).particle,
           },
           {
             onScore: (s) => setScore(s),
@@ -139,14 +142,14 @@ export function GameStage({ event, onEnd, onQuit }: Props) {
         <div className="flex items-start justify-between gap-3">
           <div className="glass rounded-2xl px-4 py-2">
             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">Score</p>
-            <span ref={scoreRef} className="block font-display text-2xl font-bold tabular-nums text-white">
+            <span ref={scoreRef} className="block font-['Outfit',system-ui,sans-serif] text-2xl font-bold tabular-nums text-white">
               {score}
             </span>
           </div>
 
           <div className={`glass rounded-2xl px-4 py-2 text-center ${urgent ? 'ring-2 ring-rose-400/60' : ''}`}>
             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">Time</p>
-            <span className={`block font-display text-2xl font-bold tabular-nums ${urgent ? 'text-rose-300' : 'text-white'}`}>
+            <span className={`block font-['Outfit',system-ui,sans-serif] text-2xl font-bold tabular-nums ${urgent ? 'text-rose-300' : 'text-white'}`}>
               {seconds}s
             </span>
           </div>

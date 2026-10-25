@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { ITEM_TINT } from '@/assets/art';
+import { ITEM_TINTS } from '@/assets/art';
 import { DIFFICULTY, GIFT_WEIGHTS } from '@/config/game';
 import { hexToNumber } from '@/services/color';
 import { sound } from '@/services/sound';
@@ -91,7 +91,8 @@ export class CatchScene extends Phaser.Scene {
     this.H = this.scale.height;
     this.computeSizes();
 
-    // Ambient snowfall. Fewer flakes when the visitor prefers reduced motion.
+    // Ambient particles (snow, gold dust or data dots). Fewer when reduced motion is preferred.
+    const density = Phaser.Math.Clamp(this.opts.particle.density, 0.05, 1);
     this.snowZone.setTo(0, -20, this.W, 1);
     this.snow = this.add.particles(0, 0, 'flake', {
       emitZone: { type: 'random', source: this.snowZone, quantity: 1 } as Phaser.Types.GameObjects.Particles.EmitZoneData,
@@ -100,7 +101,8 @@ export class CatchScene extends Phaser.Scene {
       speedX: { min: -12 * this.unit, max: 12 * this.unit },
       scale: { min: 0.08 * this.unit, max: 0.28 * this.unit },
       alpha: { start: 0.85, end: 0.15 },
-      frequency: this.opts.reducedMotion ? 600 : 140,
+      frequency: this.opts.reducedMotion ? 600 : Math.round(100 / density),
+      tint: hexToNumber(this.opts.particle.color),
       advance: 6000,
     });
     this.snow.setDepth(0);
@@ -340,7 +342,7 @@ export class CatchScene extends Phaser.Scene {
       onComplete: () => s.setVisible(false),
     });
 
-    const tint = hexToNumber(ITEM_TINT[f.kind]);
+    const tint = hexToNumber(ITEM_TINTS[this.opts.style][f.kind]);
     this.burst.setParticleTint(tint);
     this.burst.explode(f.kind === 'gold' ? 18 : f.kind === 'snowball' ? 10 : 12, s.x, rimY);
 
@@ -359,7 +361,7 @@ export class CatchScene extends Phaser.Scene {
       if (!this.opts.reducedMotion) this.cameras.main.shake(140, 0.006);
     }
 
-    this.popup(s.x, rimY, delta, ITEM_TINT[f.kind]);
+    this.popup(s.x, rimY, delta, ITEM_TINTS[this.opts.style][f.kind]);
   }
 
   private popup(x: number, y: number, delta: number, color: string): void {

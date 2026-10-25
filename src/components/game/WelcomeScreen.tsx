@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { ITEM_LABELS } from '@/config/game';
+import { DEMO_SLUGS } from '@/config/demoEvents';
+import { presetOf, styleOf } from '@/config/styles';
 import { prefersReducedMotion } from '@/hooks/useReducedMotion';
 import type { EventConfig, ItemKind } from '@/types/event';
 import { BrandMark } from '../ui/Brand';
@@ -12,11 +13,13 @@ import { AudioToggle } from './AudioToggle';
 interface Props {
   event: EventConfig;
   onStart: () => void;
+  /** Off in the dashboard preview, which never starts a game. */
+  prefetchGame?: boolean;
 }
 
 const ORDER: ItemKind[] = ['gold', 'blue', 'purple', 'snowball'];
 
-export function WelcomeScreen({ event, onStart }: Props) {
+export function WelcomeScreen({ event, onStart, prefetchGame = true }: Props) {
   const root = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,12 +31,23 @@ export function WelcomeScreen({ event, onStart }: Props) {
     return () => ctx.revert();
   }, []);
 
+  // Fetch the game engine while the visitor reads the instructions, so Start is instant.
+  useEffect(() => {
+    if (!prefetchGame) return;
+    const prefetch = () => void import('@/game/createGame');
+    const ric = (window as unknown as { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback;
+    if (ric) ric(prefetch);
+    else window.setTimeout(prefetch, 1200);
+  }, [prefetchGame]);
+
   const scores = event.game.scores;
+  const style = styleOf(event.theme);
+  const { itemLabels: labels, catcherName } = presetOf(event.theme);
 
   return (
     <div ref={root} className="flex min-h-full flex-col px-5 pb-6 pt-5 safe-bottom">
       <div className="flex items-center justify-between" data-in>
-        <SampleBadge label="Demo" />
+        <SampleBadge label={DEMO_SLUGS.has(event.slug) ? 'Demo · Fictional brand' : 'Demo'} />
         <AudioToggle />
       </div>
 
@@ -45,7 +59,7 @@ export function WelcomeScreen({ event, onStart }: Props) {
           {event.brandName}
         </p>
         <h1 data-in className="mt-2 text-[2rem] font-bold leading-tight sm:text-4xl">
-          Catch the <span className="text-brand">Gift</span>
+          Catch the <span className="text-brand">{style === 'luxury' ? 'Fragrance' : style === 'corporate' ? 'Cube' : 'Gift'}</span>
         </h1>
         {event.tagline && (
           <p data-in className="mt-1 text-sm text-slate-400">
@@ -60,13 +74,13 @@ export function WelcomeScreen({ event, onStart }: Props) {
           {ORDER.map((k) => (
             <li key={k} className="glass flex flex-col items-center rounded-2xl px-1 pb-2 pt-3">
               <span data-bob>
-                <GiftArt kind={k} size={k === 'snowball' ? 40 : 46} />
+                <GiftArt kind={k} style={style} size={k === 'snowball' ? 40 : 46} />
               </span>
               <span className={`mt-1 font-display text-base font-bold ${scores[k] < 0 ? 'text-rose-300' : 'text-white'}`}>
                 {scores[k] > 0 ? '+' : ''}
                 {scores[k]}
               </span>
-              <span className="text-[10px] leading-tight text-slate-400">{ITEM_LABELS[k]}</span>
+              <span className="text-[10px] leading-tight text-slate-400">{labels[k]}</span>
             </li>
           ))}
         </ul>
@@ -76,7 +90,7 @@ export function WelcomeScreen({ event, onStart }: Props) {
             <Icon name="clock" size={20} />
           </span>
           <p className="text-xs leading-relaxed text-slate-300">
-            <strong className="text-white">{event.game.durationSec} seconds.</strong> Drag your finger, move the mouse or use ← → to move the basket.
+            <strong className="text-white">{event.game.durationSec} seconds.</strong> Drag your finger, move the mouse or use ← → to move the {catcherName}.
             {event.reward.enabled && (
               <>
                 {' '}

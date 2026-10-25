@@ -7,11 +7,16 @@ export type EventStatus = 'draft' | 'scheduled' | 'live' | 'ended';
 /** Where a record lives. Demo records are never mixed with production analytics. */
 export type DataEnvironment = 'demo' | 'production';
 
+/** Visual preset layered on top of the brand colours: backdrop, particles, font and game art. */
+export type VisualStyle = 'festive' | 'luxury' | 'corporate';
+
 export interface EventTheme {
   /** Main brand colour, hex (#rrggbb). Used for buttons, glow and the basket. */
   primary: string;
   /** Secondary highlight colour, hex. */
   accent: string;
+  /** Optional so events saved before styles existed keep working (defaults to 'festive'). */
+  style?: VisualStyle;
 }
 
 export interface GameSettings {

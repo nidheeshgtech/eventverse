@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { ITEM_LABELS } from '@/config/game';
+import { presetOf, styleOf } from '@/config/styles';
 import { prefersReducedMotion } from '@/hooks/useReducedMotion';
 import { sound } from '@/services/sound';
 import type { EventConfig, ItemKind, Voucher } from '@/types/event';
@@ -82,9 +82,9 @@ export function ResultScreen({ event, result, voucher, previousVoucher, status, 
       <ul data-in className="mx-auto mt-6 grid w-full max-w-sm grid-cols-4 gap-2" aria-label="Items caught">
         {ORDER.map((k) => (
           <li key={k} className="glass flex flex-col items-center rounded-2xl py-2.5">
-            <GiftArt kind={k} size={30} />
+            <GiftArt kind={k} style={styleOf(event.theme)} size={30} />
             <span className="mt-1 font-display text-lg font-bold tabular-nums">{result.caught[k]}</span>
-            <span className="text-[10px] text-slate-400">{ITEM_LABELS[k]}</span>
+            <span className="text-[10px] text-slate-400">{presetOf(event.theme).itemLabels[k]}</span>
           </li>
         ))}
       </ul>

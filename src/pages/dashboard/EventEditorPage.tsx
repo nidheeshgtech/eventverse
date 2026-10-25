@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ColorField, LogoUploader } from '@/components/dashboard/BrandingFields';
+import { EventBackdrop } from '@/components/game/EventBackdrop';
 import { QrPanel } from '@/components/dashboard/QrPanel';
 import { WelcomeScreen } from '@/components/game/WelcomeScreen';
 import { Button } from '@/components/ui/Button';
@@ -8,15 +9,15 @@ import { SelectField, TextArea, TextField, Toggle } from '@/components/ui/Field'
 import { Icon } from '@/components/ui/Icon';
 import { GiftArt, PageLoader } from '@/components/ui/Misc';
 import { useToast } from '@/components/ui/Toast';
-import { DEFAULT_GAME, DEFAULT_REWARD, ITEM_LABELS, LIMITS } from '@/config/game';
+import { DEFAULT_GAME, DEFAULT_REWARD, LIMITS } from '@/config/game';
+import { presetOf, STYLE_PRESETS, styleOf } from '@/config/styles';
 import { eventPath } from '@/config/site';
 import { useAsync } from '@/hooks/useAsync';
-import { themeVars } from '@/services/color';
 import { data } from '@/services/data';
 import { localISODate } from '@/services/dates';
 import { uuid } from '@/services/ids';
 import { sanitizeEvent, slugify, validateEvent, type FieldErrors } from '@/services/validation';
-import type { Difficulty, EventConfig, GameSettings, ItemKind, RewardSettings } from '@/types/event';
+import type { Difficulty, EventConfig, GameSettings, ItemKind, RewardSettings, VisualStyle } from '@/types/event';
 
 function blankEvent(): EventConfig {
   const now = new Date().toISOString();
@@ -30,7 +31,7 @@ function blankEvent(): EventConfig {
     welcomeMessage: 'Catch as many gifts as you can before time runs out!',
     venue: '',
     logoUrl: null,
-    theme: { primary: '#f9d36b', accent: '#4cc3ff' },
+    theme: { primary: '#f9d36b', accent: '#4cc3ff', style: 'festive' },
     startDate: localISODate(),
     endDate: localISODate(14),
     game: { ...DEFAULT_GAME, scores: { ...DEFAULT_GAME.scores } },
@@ -132,7 +133,7 @@ function Editor({ initial, isNew, otherSlugs }: { initial: EventConfig; isNew: b
     }
   };
 
-  const previewStyle = themeVars(draft.theme.primary, draft.theme.accent) as CSSProperties;
+  const visualStyle = styleOf(draft.theme);
   const previewEvent: EventConfig = {
     ...draft,
     brandName: draft.brandName || 'Your Brand',
@@ -213,6 +214,28 @@ function Editor({ initial, isNew, otherSlugs }: { initial: EventConfig; isNew: b
               <LogoUploader value={draft.logoUrl} onChange={(logoUrl) => patch({ logoUrl })} />
               <ColorField label="Primary colour" value={draft.theme.primary} onChange={(primary) => patch({ theme: { ...draft.theme, primary } })} error={errors.primary} />
               <ColorField label="Accent colour" value={draft.theme.accent} onChange={(accent) => patch({ theme: { ...draft.theme, accent } })} error={errors.accent} />
+              <fieldset>
+                <legend className="mb-1.5 text-sm font-medium text-slate-200">Visual style</legend>
+                <div className="grid gap-2 sm:grid-cols-3">
+                  {(Object.keys(STYLE_PRESETS) as VisualStyle[]).map((s) => (
+                    <label
+                      key={s}
+                      className={`flex cursor-pointer flex-col gap-2 rounded-2xl border p-3 transition ${
+                        visualStyle === s ? 'border-white/40 bg-white/10' : 'border-white/10 bg-white/[0.03] hover:border-white/20'
+                      }`}
+                    >
+                      <input type="radio" name="visual-style" value={s} checked={visualStyle === s} onChange={() => patch({ theme: { ...draft.theme, style: s } })} className="sr-only" />
+                      <span className="flex items-center gap-1">
+                        {(['gold', 'blue', 'purple'] as ItemKind[]).map((k) => (
+                          <GiftArt key={k} kind={k} style={s} size={26} />
+                        ))}
+                      </span>
+                      <span className="text-sm font-semibold text-white">{STYLE_PRESETS[s].label}</span>
+                      <span className="text-xs leading-snug text-slate-400">{STYLE_PRESETS[s].description}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
             </div>
           </Section>
 
@@ -261,8 +284,8 @@ function Editor({ initial, isNew, otherSlugs }: { initial: EventConfig; isNew: b
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                   {(Object.keys(draft.game.scores) as ItemKind[]).map((k) => (
                     <label key={k} className="flex flex-col items-center gap-2 rounded-2xl bg-white/5 p-3">
-                      <GiftArt kind={k} size={40} />
-                      <span className="text-xs text-slate-400">{ITEM_LABELS[k]}</span>
+                      <GiftArt kind={k} style={visualStyle} size={40} />
+                      <span className="text-xs text-slate-400">{presetOf(draft.theme).itemLabels[k]}</span>
                       <input
                         type="number"
                         inputMode="numeric"
@@ -310,19 +333,12 @@ function Editor({ initial, isNew, otherSlugs }: { initial: EventConfig; isNew: b
         <aside className="xl:sticky xl:top-6 xl:self-start">
           <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Live preview</p>
           <div className="mx-auto w-[300px] rounded-[2.5rem] border border-white/15 bg-midnight-900 p-2 shadow-2xl">
-            <div
-              style={previewStyle}
-              className="pointer-events-none relative h-[600px] overflow-hidden rounded-[2rem] bg-night-sky"
-              aria-hidden="true"
-              ref={(el) => el?.setAttribute('inert', '')}
-            >
-              <div
-                className="absolute inset-0 opacity-60"
-                style={{ background: `radial-gradient(ellipse at 50% -10%, ${draft.theme.primary}33, transparent 55%)` }}
-              />
-              <div className="relative h-full origin-top scale-[0.92]">
-                <WelcomeScreen event={previewEvent} onStart={() => undefined} />
-              </div>
+            <div className="pointer-events-none" aria-hidden="true" ref={(el) => el?.setAttribute('inert', '')}>
+              <EventBackdrop event={draft} className="h-[600px] rounded-[2rem]">
+                <div className="relative h-full origin-top scale-[0.92]">
+                  <WelcomeScreen event={previewEvent} onStart={() => undefined} prefetchGame={false} />
+                </div>
+              </EventBackdrop>
             </div>
           </div>
         </aside>

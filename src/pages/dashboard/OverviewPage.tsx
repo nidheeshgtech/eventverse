@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { EngagementChart, FunnelChart, ScoreChart, VoucherChart } from '@/components/dashboard/Charts';
 import { KpiCard, Panel } from '@/components/dashboard/KpiCard';
 import { Icon } from '@/components/ui/Icon';
@@ -10,7 +10,10 @@ import type { AnalyticsSummary } from '@/types/analytics';
 const pct = (a: number, b: number) => (b ? `${Math.round((a / b) * 100)}%` : '—');
 
 export default function OverviewPage() {
-  const [eventId, setEventId] = useState<string>('');
+  // ?event=<id> deep-links to one event's figures (used by the landing page demo cards).
+  const [params, setParams] = useSearchParams();
+  const eventId = params.get('event') ?? '';
+  const setEventId = (id: string) => setParams(id ? { event: id } : {}, { replace: true });
   const events = useAsync(() => data.listEvents(), []);
   const analytics = useAsync(() => data.getAnalytics(eventId || null), [eventId]);
   const device = useAsync(() => data.getDeviceActivity(eventId || null), [eventId]);

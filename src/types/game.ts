@@ -1,4 +1,4 @@
-import type { Difficulty, ItemKind } from './event';
+import type { Difficulty, ItemKind, VisualStyle } from './event';
 
 export interface GameResult {
   score: number;
@@ -19,6 +19,10 @@ export interface GameOptions {
   scores: Record<ItemKind, number>;
   basketColor: string;
   reducedMotion: boolean;
+  /** Selects item/catcher art and burst tints. */
+  style: VisualStyle;
+  /** Ambient particle colour (hex) and relative density (0–1). */
+  particle: { color: string; density: number };
 }
 
 export interface GameHandle {

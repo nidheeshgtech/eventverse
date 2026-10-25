@@ -18,8 +18,8 @@ export async function createGame(parent: HTMLElement, opts: GameOptions, cb: Gam
   const texW = Math.round(96 * dpr);
 
   const [items, basket] = await Promise.all([
-    Promise.all(KINDS.map((k) => rasterize(itemSvg(k, `g${k}`), texW, Math.round(texW * (128 / 120))))),
-    rasterize(basketSvg(opts.basketColor), Math.round(220 * dpr), Math.round(124 * dpr)),
+    Promise.all(KINDS.map((k) => rasterize(itemSvg(k, `g${k}`, opts.style), texW, Math.round(texW * (128 / 120))))),
+    rasterize(basketSvg(opts.basketColor, 'bk', opts.style), Math.round(220 * dpr), Math.round(124 * dpr)),
   ]);
   const art: Record<string, HTMLCanvasElement> = {
     basket,

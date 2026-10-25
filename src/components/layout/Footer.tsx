@@ -18,9 +18,9 @@ export function Footer() {
         <div>
           <h3 className="text-sm font-semibold text-white">Live demos</h3>
           <ul className="mt-3 space-y-2 text-sm text-slate-400">
-            <li><Link className="hover:text-white" to="/demo/winter-festival">Winter festival</Link></li>
-            <li><Link className="hover:text-white" to="/demo/retail-brand">Retail brand</Link></li>
-            <li><Link className="hover:text-white" to="/demo/exhibition-booth">Exhibition booth</Link></li>
+            <li><Link className="hover:text-white" to="/demo/luxury-perfume">Luxury perfume exhibition</Link></li>
+            <li><Link className="hover:text-white" to="/demo/winter-festival">Dubai winter festival</Link></li>
+            <li><Link className="hover:text-white" to="/demo/exhibition-booth">Corporate exhibition booth</Link></li>
           </ul>
         </div>
         <div>

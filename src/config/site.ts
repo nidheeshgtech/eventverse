@@ -9,9 +9,9 @@ export const SITE = {
 };
 
 export const NAV_LINKS = [
+  { href: '#demos', label: 'Demos' },
   { href: '#how', label: 'How it works' },
   { href: '#benefits', label: 'Benefits' },
-  { href: '#use-cases', label: 'Use cases' },
   { href: '#book', label: 'Book a demo' },
 ];
 

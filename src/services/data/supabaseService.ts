@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { AnalyticsSummary } from '@/types/analytics';
-import type { DataEnvironment, DemoRequest, EventConfig, GameSettings, RewardSettings, Voucher } from '@/types/event';
+import type { DataEnvironment, DemoRequest, EventConfig, GameSettings, RewardSettings, VisualStyle, Voucher } from '@/types/event';
 import type { GameResult } from '@/types/game';
 import { emptySummary } from '../analytics';
 import { readSession, writeSession } from '../storage';
@@ -19,6 +19,8 @@ interface EventRow {
   logo_url: string | null;
   primary_color: string;
   accent_color: string;
+  /** Added in migration 0002; absent on databases that haven't applied it. */
+  visual_style?: VisualStyle;
   start_date: string;
   end_date: string;
   created_at: string;
@@ -53,7 +55,7 @@ function toEvent(r: EventRow): EventConfig {
     welcomeMessage: r.welcome_message,
     venue: r.venue,
     logoUrl: r.logo_url,
-    theme: { primary: r.primary_color, accent: r.accent_color },
+    theme: { primary: r.primary_color, accent: r.accent_color, style: r.visual_style ?? 'festive' },
     startDate: r.start_date,
     endDate: r.end_date,
     game: cfg.game,
@@ -120,6 +122,7 @@ export class SupabaseDataService implements DataService {
         logo_url: event.logoUrl,
         primary_color: event.theme.primary,
         accent_color: event.theme.accent,
+        visual_style: event.theme.style ?? 'festive',
         start_date: event.startDate,
         end_date: event.endDate,
       },

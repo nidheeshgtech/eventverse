@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { NAV_LINKS } from '@/config/site';
 import { Logo } from '../ui/Brand';
-import { ButtonLink } from '../ui/Button';
+import { buttonClass } from '../ui/Button';
 import { Icon } from '../ui/Icon';
 
 export function SiteNav() {
@@ -48,9 +48,9 @@ export function SiteNav() {
           <Link to="/dashboard" className="rounded-full px-4 py-2 text-sm text-slate-300 hover:text-white">
             Dashboard
           </Link>
-          <ButtonLink to="/demo/winter-festival" size="sm" icon={<Icon name="play" size={14} />}>
-            Live demo
-          </ButtonLink>
+          <a href="#demos" className={buttonClass('primary', 'sm')}>
+            <Icon name="play" size={14} /> Live demos
+          </a>
         </div>
         <button
           type="button"
@@ -84,9 +84,9 @@ export function SiteNav() {
               </Link>
             </li>
           </ul>
-          <ButtonLink to="/demo/winter-festival" size="lg" className="mt-6 w-full" icon={<Icon name="play" size={16} />}>
-            Play the live demo
-          </ButtonLink>
+          <a href="#demos" onClick={() => setOpen(false)} className={buttonClass('primary', 'lg', 'mt-6 w-full')}>
+            <Icon name="play" size={16} /> Choose a live demo
+          </a>
         </div>
       )}
     </header>

@@ -34,13 +34,14 @@ No credentials needed. Without Supabase keys the app runs in **local demo mode**
 
 | Path | What it is |
 | --- | --- |
-| `/` | Landing page with hero, interactive preview, How it works, benefits, use cases and the Book a Demo form |
-| `/demo/winter-festival` | Built-in demo: Aurora Winter Nights (gold/blue, Normal, target 400) |
-| `/demo/retail-brand` | Built-in demo: Maison Lumière (rose/gold, Normal, target 420) |
-| `/demo/exhibition-booth` | Built-in demo: NovaGrid Systems (blue/violet, Easy, target 300) |
+| `/` | Landing page: hero, **Choose Demo Experience**, How it works, benefits, Book a Demo |
+| `/demo/luxury-perfume` | Luxury Perfume Exhibition — *Maison Ambre* (luxury style, Normal, target 400) |
+| `/demo/winter-festival` | Dubai Winter Festival — *Aurora Winter Festival* (festive style, Normal, target 400) |
+| `/demo/exhibition-booth` | Corporate Exhibition Booth — *NovaGrid Systems* (corporate style, Easy, target 300) |
+| `/demo/retail-brand` | Earlier demo (*Maison Lumière*), kept for existing links; not featured |
 | `/e/:slug` | Events you create in the dashboard |
 | `/voucher/:code` | Voucher verification page (where the voucher QR code points). Staff can mark a voucher redeemed here |
-| `/dashboard` | Analytics overview |
+| `/dashboard` | Analytics overview. `?event=<id>` opens one event's sample analytics (e.g. `?event=demo-luxury-perfume`) |
 | `/dashboard/events` | Event list with QR, duplicate, open and delete |
 | `/dashboard/events/new`, `/dashboard/events/:id` | Event editor: details, logo, colours, game, rewards, QR, with a live preview |
 | `/dashboard/vouchers` | Voucher list, search, redeem, verify by reference |
@@ -57,6 +58,35 @@ No credentials needed. Without Supabase keys the app runs in **local demo mode**
 - Rendered at device pixel ratio (capped at 2), with object pooling, no physics engine and procedural art (no image or audio files). Sound effects are synthesised with Web Audio.
 - Rewards are skill-based only: no paid entry and no random draws. One voucher per visit.
 
+## Sales demos and visual styles
+
+All three featured demos run on the **same Phaser engine**. Each event chooses a *visual style* (`theme.style`) on top of its brand colours:
+
+| Style | Backdrop and particles | Falling items (+30 / +20 / +10 / −10) | Catcher | Display font |
+| --- | --- | --- | --- | --- |
+| `festive` | Midnight purple/blue, snow | Gold, blue and purple gifts; snowball | Woven basket | Outfit |
+| `luxury` | Black and gold, gold dust | Gold Elixir, Pearl Musk and Rosé Bloom bottles; smoke | Black and gold shopping bag | Playfair Display (loaded only on luxury pages) |
+| `corporate` | Slate with a subtle grid, data dots | Gold, blue and teal cubes; error block | Glossy tray | Outfit |
+
+Presets live in `src/config/styles.ts`, the art in `src/assets/art.ts` (procedural SVG, no image files) and the fictional logos in `src/config/demoLogos.ts`. Events created in the dashboard pick a style under **Branding → Visual style**. Events saved before styles existed default to `festive`.
+
+Labelling: built-in demos show **"Demo · Fictional brand"** on the welcome screen, and the landing cards carry a *Fictional brand* badge. Vouchers are always marked **SAMPLE / DEMO ONLY**, and the dashboard shows **Sample data** wherever figures are generated.
+
+Performance: the game engine is prefetched while the visitor reads the welcome screen (the canvas was ready about 200 ms after tapping Start in testing). The QR library loads only when a landing card's QR is opened. Hashed `/assets/*` files are served with `Cache-Control: immutable` on Vercel.
+
+## Manual testing still required
+
+These need real devices or people, and can't be automated here:
+
+- [ ] **Real phones:** scan each landing-card QR code on iPhone (Safari) and Android (Chrome). Check touch drag, the 3-2-1 countdown, safe areas (notch and home bar) and portrait layout.
+- [ ] **Sound:** confirm the effects play after tapping Start (iOS needs the tap) and that the mute toggle works.
+- [ ] **Low-end Android:** check frame rate during the last 10 seconds, when the most items are on screen.
+- [ ] **Auto-pause:** lock the phone or switch apps mid-game. The game should pause, then resume with a fresh countdown.
+- [ ] **Voucher flow:** earn a voucher on one phone, then open its QR on that same phone. In local demo mode, vouchers only verify on the device that earned them.
+- [ ] **Book a Demo:** after activating FormSubmit, submit the live form and confirm the email arrives.
+- [ ] **Luxury font:** on a slow connection, the title briefly shows a fallback serif before Playfair loads. Judge whether that's acceptable.
+- [ ] **Balance:** with real players, check that the targets (400 / 400 / 300) feel achievable but not automatic. Lucky rounds can pass with little movement.
+
 ## Project structure
 
 ```
@@ -65,10 +95,10 @@ src/
   components/
     ui/          Button, Field, Icon, Brand, QRCode, Snowfall, Toast…
     layout/      SiteNav, Footer
-    landing/     Hero, GamePreview, Sections, BookDemo
-    game/        WelcomeScreen, GameStage (HUD/pause), ResultScreen, VoucherCard, Confetti
+    landing/     Hero, GamePreview, DemoShowcase, Sections, BookDemo
+    game/        WelcomeScreen, GameStage (HUD/pause), ResultScreen, VoucherCard, Confetti, EventBackdrop
     dashboard/   DashboardLayout, Charts, KpiCard, QrPanel, BrandingFields
-  config/        env, game (scores, difficulty curves, limits), demoEvents, site
+  config/        env, game (scores, difficulty curves, limits), styles, demoEvents, demoLogos, site
   game/          CatchScene.ts (Phaser scene), createGame.ts (boot, DPR scaling, resize)
   hooks/         useAsync, useReveal, useReducedMotion, useDocumentHidden, useAdmin
   pages/         LandingPage, EventPage, VoucherPage, LoginPage, dashboard/*
@@ -89,7 +119,7 @@ The Book a Demo form emails each submission via [FormSubmit](https://formsubmit.
 ## Supabase (optional)
 
 1. Create a Supabase project.
-2. Run `supabase/migrations/0001_eventverse.sql`, either in the SQL editor or with `supabase db push`.
+2. Run `supabase/migrations/0001_eventverse.sql`, then `0002_visual_style.sql`, either in the SQL editor or with `supabase db push`.
 3. Create an admin user under **Authentication → Users**, then grant them a role:
    ```sql
    insert into public.admin_users (user_id, role)

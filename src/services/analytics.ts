@@ -43,6 +43,7 @@ const SCALE: Record<string, number> = {
   'demo-winter-festival': 1.6,
   'demo-retail-brand': 0.9,
   'demo-exhibition-booth': 0.55,
+  'demo-luxury-perfume': 1.1,
 };
 
 /** Generated figures for demo mode. Always shown with a "Sample data" label. */

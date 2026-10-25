@@ -1,9 +1,5 @@
-import { Link } from 'react-router-dom';
-import { DEMO_EVENTS } from '@/config/demoEvents';
 import { DEFAULT_SCORES, ITEM_LABELS } from '@/config/game';
-import { eventPath } from '@/config/site';
 import type { ItemKind } from '@/types/event';
-import { BrandMark } from '../ui/Brand';
 import { Icon, type IconName } from '../ui/Icon';
 import { GiftArt, GlassCard } from '../ui/Misc';
 
@@ -113,57 +109,6 @@ export function Benefits() {
       <div className="mt-14 grid gap-5 lg:grid-cols-2">
         <BenefitList title="For event agencies" items={AGENCY} tone="gold" />
         <BenefitList title="For brands" items={BRAND} tone="blue" />
-      </div>
-    </section>
-  );
-}
-
-const USE_CASE_ICON: Record<string, IconName> = {
-  'winter-festival': 'snowflake',
-  'retail-brand': 'store',
-  'exhibition-booth': 'building',
-};
-
-export function UseCases() {
-  return (
-    <section id="use-cases" className="section scroll-mt-24 py-24">
-      <SectionHeading
-        eyebrow="Use cases"
-        title="One game, three very different events"
-        copy="Each demo below is the same platform with different branding, rewards and difficulty. Open one on your phone."
-      />
-      <div className="mt-14 grid gap-5 md:grid-cols-3">
-        {DEMO_EVENTS.map((ev) => (
-          <Link
-            key={ev.id}
-            to={eventPath(ev.slug)}
-            data-reveal
-            className="group glass relative flex flex-col overflow-hidden rounded-3xl p-6 transition hover:-translate-y-1 hover:border-white/25"
-          >
-            <div
-              className="absolute -right-16 -top-16 h-48 w-48 rounded-full opacity-40 blur-3xl transition group-hover:opacity-70"
-              style={{ background: `radial-gradient(circle, ${ev.theme.primary}, transparent 70%)` }}
-              aria-hidden="true"
-            />
-            <div className="flex items-center justify-between">
-              <BrandMark event={ev} size={48} />
-              <span className="grid h-9 w-9 place-items-center rounded-full bg-white/5 text-slate-300">
-                <Icon name={USE_CASE_ICON[ev.slug] ?? 'sparkles'} size={18} />
-              </span>
-            </div>
-            <h3 className="mt-6 text-xl font-semibold">{ev.brandName}</h3>
-            <p className="mt-1 text-sm text-slate-400">{ev.tagline}</p>
-            <div className="mt-6 flex flex-wrap gap-2 text-xs">
-              <span className="rounded-full bg-white/5 px-3 py-1 text-slate-300">Target {ev.reward.threshold} pts</span>
-              <span className="rounded-full bg-white/5 px-3 py-1 text-slate-300">Reward: {ev.reward.discountLabel}</span>
-              <span className="rounded-full bg-white/5 px-3 py-1 capitalize text-slate-300">{ev.game.difficulty}</span>
-            </div>
-            <span className="mt-8 inline-flex items-center gap-2 font-display text-sm font-semibold text-white">
-              Open demo <Icon name="arrowRight" size={16} className="transition group-hover:translate-x-1" />
-            </span>
-            <span className="mt-2 font-mono text-[11px] text-slate-500">{eventPath(ev.slug)}</span>
-          </Link>
-        ))}
       </div>
     </section>
   );

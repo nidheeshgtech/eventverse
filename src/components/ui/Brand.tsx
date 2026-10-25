@@ -40,6 +40,20 @@ function initials(name: string): string {
 
 /** Client logo, or an elegant monogram when no logo has been uploaded. */
 export function BrandMark({ event, size = 56 }: { event: Pick<EventConfig, 'brandName' | 'logoUrl' | 'theme'>; size?: number }) {
+  // Built-in demo logos are full-bleed SVG tiles. Uploaded logos are PNG/JPG/WebP
+  // (SVG uploads are rejected), so the prefix reliably identifies them.
+  if (event.logoUrl?.startsWith('data:image/svg+xml')) {
+    return (
+      <img
+        src={event.logoUrl}
+        alt={`${event.brandName} logo`}
+        width={size}
+        height={size}
+        className="rounded-2xl shadow-glow ring-1 ring-white/15"
+        style={{ width: size, height: size }}
+      />
+    );
+  }
   if (event.logoUrl) {
     return (
       <span

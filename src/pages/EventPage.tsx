@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { EventBackdrop } from '@/components/game/EventBackdrop';
 import { GameStage } from '@/components/game/GameStage';
 import { ResultScreen } from '@/components/game/ResultScreen';
 import { formatDate } from '@/components/game/VoucherCard';
@@ -7,9 +8,7 @@ import { WelcomeScreen } from '@/components/game/WelcomeScreen';
 import { BrandMark } from '@/components/ui/Brand';
 import { Button, ButtonLink } from '@/components/ui/Button';
 import { PageLoader } from '@/components/ui/Misc';
-import { Snowfall } from '@/components/ui/Snowfall';
 import { useAsync } from '@/hooks/useAsync';
-import { themeVars } from '@/services/color';
 import { data } from '@/services/data';
 import { localISODate } from '@/services/dates';
 import { sound } from '@/services/sound';
@@ -99,18 +98,8 @@ function EventExperience({ event }: { event: EventConfig }) {
     }
   };
 
-  const style = themeVars(event.theme.primary, event.theme.accent) as CSSProperties;
-
   return (
-    <div style={style} className="relative min-h-[100dvh] overflow-hidden bg-night-sky">
-      <div
-        className="pointer-events-none absolute inset-0 opacity-60"
-        style={{
-          background: `radial-gradient(ellipse at 50% -10%, ${event.theme.primary}33, transparent 55%), radial-gradient(ellipse at 100% 100%, ${event.theme.accent}26, transparent 50%)`,
-        }}
-        aria-hidden="true"
-      />
-      {screen !== 'playing' && <Snowfall density={0.7} />}
+    <EventBackdrop event={event} particles={screen !== 'playing'} className="min-h-[100dvh]">
 
       {/* Portrait-first column; on desktop it reads like a phone in the centre of the screen. */}
       <main className="relative mx-auto flex h-[100dvh] max-w-[480px] flex-col sm:py-4">
@@ -135,7 +124,7 @@ function EventExperience({ event }: { event: EventConfig }) {
           )}
         </div>
       </main>
-    </div>
+    </EventBackdrop>
   );
 }
 

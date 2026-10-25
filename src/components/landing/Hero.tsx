@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { prefersReducedMotion } from '@/hooks/useReducedMotion';
-import { ButtonLink } from '../ui/Button';
 import { Icon } from '../ui/Icon';
 import { GiftArt } from '../ui/Misc';
 import { Snowfall } from '../ui/Snowfall';
@@ -59,9 +58,9 @@ export function Hero() {
           </p>
 
           <div data-hero="cta" className="mt-9 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start">
-            <ButtonLink to="/demo/winter-festival" size="lg" icon={<Icon name="play" size={16} />}>
-              Play live demo
-            </ButtonLink>
+            <a href="#demos" className="bg-brand-gradient inline-flex h-14 items-center gap-2 rounded-full px-7 font-display text-base font-semibold shadow-glow transition hover:brightness-110 sm:text-lg">
+              <Icon name="play" size={16} /> Choose a live demo
+            </a>
             <a href="#book" className="glass inline-flex h-14 items-center gap-2 rounded-full px-7 font-display font-semibold text-white transition hover:bg-white/10">
               Book a demo <Icon name="arrowRight" size={18} />
             </a>

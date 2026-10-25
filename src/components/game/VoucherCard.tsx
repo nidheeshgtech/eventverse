@@ -53,10 +53,8 @@ export function VoucherCard({ voucher, event }: { voucher: Voucher; event: Event
         {event.reward.description && <p className="mt-1 text-xs text-slate-400">{event.reward.description}</p>}
       </div>
 
-      <div className="relative flex items-center px-3" aria-hidden="true">
-        <span className="absolute -left-3 h-6 w-6 rounded-full bg-midnight-950" />
-        <span className="h-px flex-1 border-t border-dashed border-white/25" />
-        <span className="absolute -right-3 h-6 w-6 rounded-full bg-midnight-950" />
+      <div className="px-5" aria-hidden="true">
+        <div className="h-px border-t border-dashed border-white/25" />
       </div>
 
       <div className="flex items-center gap-4 p-5 pt-4">

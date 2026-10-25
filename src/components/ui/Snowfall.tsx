@@ -15,7 +15,7 @@ interface Flake {
  * Lightweight canvas snowfall + glowing particles for page backgrounds.
  * Pauses when off-screen or when the tab is hidden; static when reduced motion is on.
  */
-export function Snowfall({ density = 1, className = '' }: { density?: number; className?: string }) {
+export function Snowfall({ density = 1, color = '#ffffff', className = '' }: { density?: number; color?: string; className?: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const reduced = useReducedMotion();
 
@@ -68,7 +68,7 @@ export function Snowfall({ density = 1, className = '' }: { density?: number; cl
         if (f.x < -4) f.x = w + 4;
         const glow = f.r > 1.6;
         ctx.globalAlpha = f.a * (0.75 + Math.sin(f.tw * 2) * 0.25);
-        ctx.fillStyle = glow ? '#fff3cf' : '#ffffff';
+        ctx.fillStyle = glow && color === '#ffffff' ? '#fff3cf' : color;
         ctx.beginPath();
         ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
         ctx.fill();
@@ -102,7 +102,7 @@ export function Snowfall({ density = 1, className = '' }: { density?: number; cl
       ro.disconnect();
       io.disconnect();
     };
-  }, [density, reduced]);
+  }, [density, color, reduced]);
 
   return <canvas ref={ref} aria-hidden="true" className={`pointer-events-none absolute inset-0 h-full w-full ${className}`} />;
 }
