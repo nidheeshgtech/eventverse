@@ -82,6 +82,10 @@ supabase/migrations/0001_eventverse.sql
 
 Each event has its own slug/URL, brand name, logo (PNG/JPG/WebP, resized to 256px, SVG rejected), primary and accent colours, welcome message, start/end dates, game settings and reward settings. Colours are applied through CSS variables (`--brand-primary`, `--brand-accent`), so buttons, glows, gradients, the basket and the QR pages all re-theme. Visitors see an "opens on…" or "ended" screen outside the event dates. Demo events offer a preview override.
 
+## Demo-request leads
+
+The Book a Demo form emails each submission via [FormSubmit](https://formsubmit.co) (configured in `src/services/leads.ts`). The first submission from a new domain triggers an **activation email** — click it once, or no leads are delivered. Override the endpoint with `VITE_LEADS_ENDPOINT` (e.g. the random alias FormSubmit gives you after activation, to keep the address out of the public bundle).
+
 ## Supabase (optional)
 
 1. Create a Supabase project.

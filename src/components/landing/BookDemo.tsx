@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { EVENT_TYPES, SITE } from '@/config/site';
+import { EVENT_TYPES } from '@/config/site';
 import { data } from '@/services/data';
+import { emailDemoRequest } from '@/services/leads';
 import { clean, validateDemoRequest, type FieldErrors } from '@/services/validation';
 import type { DemoRequest } from '@/types/event';
 import { Button } from '../ui/Button';
@@ -29,15 +30,18 @@ export function BookDemo() {
     setErrors(found);
     if (Object.keys(found).length) return;
     setStatus('sending');
+    const request: DemoRequest = {
+      name: clean(form.name, 120),
+      email: clean(form.email, 254).toLowerCase(),
+      company: clean(form.company, 120),
+      phone: clean(form.phone, 20),
+      eventType: form.eventType,
+      message: clean(form.message, 1000),
+    };
     try {
-      await data.submitDemoRequest({
-        name: clean(form.name, 120),
-        email: clean(form.email, 254).toLowerCase(),
-        company: clean(form.company, 120),
-        phone: clean(form.phone, 20),
-        eventType: form.eventType,
-        message: clean(form.message, 1000),
-      });
+      // The email is what reaches the team; the data-service copy is a backup record.
+      await emailDemoRequest(request);
+      await data.submitDemoRequest(request).catch(() => undefined);
       setStatus('sent');
       setForm(EMPTY);
     } catch {
@@ -67,9 +71,6 @@ export function BookDemo() {
               ),
             )}
           </ul>
-          <p className="mt-8 text-sm text-slate-400">
-            Prefer email? <span className="text-white">{SITE.email}</span> <span className="text-slate-500">(demo address)</span>
-          </p>
         </div>
 
         <GlassCard data-reveal className="p-6 sm:p-8">
@@ -80,7 +81,7 @@ export function BookDemo() {
               </span>
               <h3 className="mt-6 text-2xl font-semibold">Request received</h3>
               <p className="mt-2 max-w-sm text-sm text-slate-400">
-                Thanks — in this demo build your request is stored locally. In production it goes to your team&apos;s inbox or CRM.
+                Thanks — we&apos;ll be in touch shortly to set up your branded demo.
               </p>
               <Button variant="secondary" className="mt-8" onClick={() => setStatus('idle')}>
                 Send another
